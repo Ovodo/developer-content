@@ -382,7 +382,7 @@ the aggregator type:
 
 let feed = &ctx.accounts.feed_aggregator.load()?;
 // get result
-let val: f64 = feed.get_result()?.try_into()?;
+let val: u64 = feed.get_result()?.try_into()?;
 ```
 
 The `get_result()` method defined on the `AggregatorAccountData` struct is safer
@@ -753,7 +753,7 @@ declare_id!("YOUR_PROGRAM_KEY_HERE");
 pub mod burry_escrow {
     use super::*;
 
-    pub fn deposit(ctx: Context<Deposit>, escrow_amount: u64, unlock_price: f64) -> Result<()> {
+    pub fn deposit(ctx: Context<Deposit>, escrow_amount: u64, unlock_price: u64) -> Result<()> {
         deposit_handler(ctx, escrow_amount, unlock_price)
     }
 
@@ -778,7 +778,7 @@ use anchor_lang::prelude::*;
 #[account]
 #[derive(InitSpace)]
 pub struct Escrow {
-    pub unlock_price: f64,
+    pub unlock_price: u64,
     pub escrow_amount: u64,
 }
 ```
@@ -888,7 +888,7 @@ lamports the user wants to lock up in escrow and invoke the transfer
 instruction.
 
 ```rust filename="deposit.rs"
-pub fn deposit_handler(ctx: Context<Deposit>, escrow_amount: u64, unlock_price: f64) -> Result<()> {
+pub fn deposit_handler(ctx: Context<Deposit>, escrow_amount: u64, unlock_price: u64) -> Result<()> {
     msg!("Depositing funds in escrow...");
 
     let escrow = &mut ctx.accounts.escrow_account;
@@ -925,7 +925,7 @@ use crate::state::*;
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::invoke, system_instruction::transfer};
 
-pub fn deposit_handler(ctx: Context<Deposit>, escrow_amount: u64, unlock_price: f64) -> Result<()> {
+pub fn deposit_handler(ctx: Context<Deposit>, escrow_amount: u64, unlock_price: u64) -> Result<()> {
     msg!("Depositing funds in escrow...");
 
     let escrow = &mut ctx.accounts.escrow_account;
@@ -1031,7 +1031,7 @@ pub fn withdraw_handler(ctx: Context<Withdraw>) -> Result<()> {
     let feed = &ctx.accounts.feed_aggregator.load()?;
     let escrow = &ctx.accounts.escrow_account;
 
-    let current_sol_price: f64 = feed.get_result()?.try_into()?;
+    let current_sol_price: u64 = feed.get_result()?.try_into()?;
 
     // Check if the feed has been updated in the last 5 minutes (300 seconds)
     feed.check_staleness(Clock::get().unwrap().unix_timestamp, 300)
@@ -1097,7 +1097,7 @@ pub fn withdraw_handler(ctx: Context<Withdraw>) -> Result<()> {
     let feed = &ctx.accounts.feed_aggregator.load()?;
     let escrow = &ctx.accounts.escrow_account;
 
-    let current_sol_price: f64 = feed.get_result()?.try_into()?;
+    let current_sol_price: u64 = feed.get_result()?.try_into()?;
 
     // Check if the feed has been updated in the last 5 minutes (300 seconds)
     feed.check_staleness(Clock::get().unwrap().unix_timestamp, 300)
